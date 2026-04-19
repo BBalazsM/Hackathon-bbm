@@ -10,7 +10,8 @@ def parse_dt(s: str):
     return datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
 
 def partial_fee(m):
-    if m <= FREE_MINUTES: return 0
+    if m <= FREE_MINUTES:
+        return 0
     h = math.ceil((m - FREE_MINUTES) / 60)
     return min(h, 3) * 300 + max(h - 3, 0) * 500
 
@@ -38,24 +39,27 @@ def process_line(line: str):
         parts = line.split()
         start = parse_dt(" ".join(parts[1:3]))
         end = parse_dt(" ".join(parts[3:5]))
+
         if end < start:
             return "HIBA"
+
         total_minutes = int((end - start).total_seconds() // 60)
         fee = calculate_fee(total_minutes)
         duration = format_duration(total_minutes)
+
         return f"{duration} parkolás → {fee} Ft"
     except:
         return "HIBA"
 
 def main():
     lines = Path("input.txt").read_text(encoding="utf-8").splitlines()
-    results = []
+
     for line in lines:
         line = line.strip()
         if not line or "RENDSZAM" in line or "=" in line:
             continue
-        results.append(process_line(line))
-    Path("output.txt").write_text("\n".join(results), encoding="utf-8")
+
+        print(process_line(line))
 
 if __name__ == "__main__":
     main()
